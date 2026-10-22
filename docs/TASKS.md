@@ -19,7 +19,7 @@
 
 | # | Задача | Статус |
 |---|---|---|
-| 7 | Выбрать стек и описать API (по умолчанию Django REST). Модели: Product, ProductImage, ProductSize (с остатком), Category, Cart/Order, PromoCode, User | не начата |
+| 7 | Стек и API описаны в `docs/BACKEND.md` (Django + DRF, Postgres в Docker, `backend/`, онлайн-оплата). Осталось: выбрать платёжного провайдера (нужны юрлицо/ИП и ключи), решить сессии vs JWT | в работе |
 | 8 | `GET /products`, `GET /products/{slug}` | после 7 |
 | 9 | Страница `/merch` по `04-merch-catalog.png`: фильтры по категориям, статусы «новинка / скоро / sold out» | после 8 |
 | 10 | Страница `/merch/[slug]` по `05-product.png`: галерея, выбор размера, «В корзину», промокод, «следующий дроп» | после 9 |
