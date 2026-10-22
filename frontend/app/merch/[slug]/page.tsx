@@ -6,14 +6,11 @@ import SectionLabel from "@/components/SectionLabel";
 import ProductBuy from "@/components/ProductBuy";
 import ProductCard from "@/components/ProductCard";
 import { getProduct, getProducts } from "@/lib/api";
+import { formatPrice } from "@/lib/format";
 
 type Params = Promise<{ slug: string }>;
 
 const thumbCaptions = ["перед", "на человеке", "деталь"];
-
-function formatPrice(price: string) {
-    return `${Number(price).toLocaleString("ru-RU")} ₽`;
-}
 
 function Placeholder({ text, className }: { text: string; className: string }) {
     return (
@@ -61,7 +58,7 @@ async function Product({ params }: { params: Params }) {
                     <p className="mt-4 text-2xl">{formatPrice(product.price)}</p>
                     <p className="mt-8 text-sm leading-relaxed text-white/70">{product.description}</p>
 
-                    <ProductBuy sizes={product.sizes} />
+                    <ProductBuy product={product} />
 
                     <div className="mt-8 border-t border-white/30 pt-5">
                         <p className="font-mono text-xs text-white/50">есть промокод?</p>

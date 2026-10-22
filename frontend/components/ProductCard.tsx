@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Product } from "@/lib/api";
+import { formatPrice } from "@/lib/format";
 
 type ProductCardProps = {
     product: Product
@@ -10,10 +11,6 @@ const statusLabels = {
     soon: "скоро",
     regular: null,
 };
-
-function formatPrice(price: string) {
-    return `${Number(price).toLocaleString("ru-RU")} ₽`;
-}
 
 export default function ProductCard({ product }: ProductCardProps) {
     const badge = product.sold_out ? "sold out" : statusLabels[product.status];
