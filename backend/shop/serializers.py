@@ -31,3 +31,10 @@ class ProductListSerializer(serializers.ModelSerializer):
     def get_cover(self, obj):
         first = obj.images.first()
         return first.image.url if first and first.image else None
+
+
+class ProductDetailSerializer(ProductListSerializer):
+    images = ProductImageSerializer(many=True, read_only=True)
+
+    class Meta(ProductListSerializer.Meta):
+        fields = ProductListSerializer.Meta.fields + ["description", "delivery_text", "images"]
