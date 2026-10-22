@@ -1,3 +1,15 @@
-from django.shortcuts import render
+from rest_framework import generics
 
-# Create your views here.
+from .models import Product
+from .serializers import ProductListSerializer
+
+
+class ProductListView(generics.ListAPIView):
+    serializer_class = ProductListSerializer
+
+    def get_queryset(self):
+        queryset = Product.objects.select_related("category").prefetch_related("sizes", "images")
+        category = self.request.query_params.get("category")
+        if category:
+            queryset = queryset.filter(category__slug=category)
+        return queryset
