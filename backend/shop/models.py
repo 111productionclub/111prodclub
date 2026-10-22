@@ -46,3 +46,29 @@ class ProductSize(models.Model):
 
     class Meta:
         unique_together = [("product", "label")]
+
+
+class Order(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "pending", "обработка"
+        PAID = "paid", "оплачено"
+        SHIPPED = "shipped", "отправлено"
+        DONE = "done", "завершено"
+        CANCELLED = "cancelled", "отменено"
+
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    customer_name = models.CharField(max_length=100)
+    email = models.EmailField(max_length=255)
+    phone = models.CharField(max_length=20)
+    delivery_address = models.TextField(blank=True)
+    delivery_method = models.TextField(blank=True)
+    payment_id = models.CharField(max_length=100, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    size = models.ForeignKey(ProductSize, on_delete=models.PROTECT)
+    quantity = models.PositiveSmallIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
