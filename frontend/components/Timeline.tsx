@@ -15,8 +15,11 @@ export default function Timeline() {
         <section className="grid grid-cols-[1fr_2fr] gap-x-24 px-[104px] py-24">
             <div>
                 <SectionLabel>/ 02 — сроки</SectionLabel>
-                <h2 className="mt-2 text-[80px] leading-none">Сколько</h2>
-                <h2 className="mt-2 text-[80px] leading-none">ждать</h2>
+                <h2 className="mt-2 text-display">
+                    Сколько
+                    <br />
+                    ждать
+                </h2>
             </div>
 
 

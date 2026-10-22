@@ -10,7 +10,7 @@ export default function Landing() {
         <section className="bg-white text-black grid grid-cols-2 items-end px-[104px] py-36">  
             <div>
                 <SectionLabel>/ 03 — Лендинг</SectionLabel>
-                <p className="text-[160px] leading-none">7 дней</p>
+                <p className="text-display-xl">7 дней</p>
             </div>
             <div className="flex flex-col gap-4">
                 {points.map((point) => (
