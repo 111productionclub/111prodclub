@@ -5,7 +5,7 @@ type TimelineItem = {
 };
 
 const items: TimelineItem[] = [
-    { title: "Лендинг", duration: "от 7 дней" },
+    { title: "От идеи до запуска", duration: "от 7 дней" },
     { title: "Многостраничный сайт", duration: "2–4 недели" },
     { title: "Магазин / бэкенд", duration: "от 4 недель" },
     { title: "Хостинг и поддержка", duration: "подписка" },
@@ -15,7 +15,8 @@ export default function Timeline() {
         <section className="grid grid-cols-[1fr_2fr] gap-x-24 px-[104px] py-24">
             <div>
                 <SectionLabel>/ 02 — сроки</SectionLabel>
-                <h2 className="mt-2 text-[80px] leading-none">Сколько ждать</h2>
+                <h2 className="mt-2 text-[80px] leading-none">Сколько</h2>
+                <h2 className="mt-2 text-[80px] leading-none">ждать</h2>
             </div>
 
 
