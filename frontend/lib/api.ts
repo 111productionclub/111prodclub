@@ -7,6 +7,12 @@ export type ProductSize = {
     stock: number
 }
 
+export type ProductImage = {
+    image: string | null
+    caption: string
+    order: number
+}
+
 export type Product = {
     slug: string
     sku: string
@@ -19,11 +25,28 @@ export type Product = {
     cover: string | null
 }
 
+export type ProductDetail = Product & {
+    description: string
+    delivery_text: string
+    images: ProductImage[]
+}
+
 export async function getProducts(category?: string): Promise<Product[]> {
     const query = category ? `?category=${encodeURIComponent(category)}` : "";
     const res = await fetch(`${API_URL}/api/products/${query}`);
     if (!res.ok) {
         throw new Error(`Не удалось загрузить товары: ${res.status}`);
+    }
+    return res.json();
+}
+
+export async function getProduct(slug: string): Promise<ProductDetail | null> {
+    const res = await fetch(`${API_URL}/api/products/${encodeURIComponent(slug)}/`);
+    if (res.status === 404) {
+        return null;
+    }
+    if (!res.ok) {
+        throw new Error(`Не удалось загрузить товар: ${res.status}`);
     }
     return res.json();
 }
