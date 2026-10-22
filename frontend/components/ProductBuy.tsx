@@ -1,13 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import type { ProductSize } from "@/lib/api";
+import type { ProductDetail } from "@/lib/api";
+import { useCart } from "@/lib/cart";
 
 type ProductBuyProps = {
-    sizes: ProductSize[]
+    product: Pick<ProductDetail, "slug" | "sku" | "title" | "price" | "sizes">
 };
 
-export default function ProductBuy({ sizes }: ProductBuyProps) {
+export default function ProductBuy({ product }: ProductBuyProps) {
+    const { sizes } = product;
+    const { addItem, setOpen } = useCart();
     const firstAvailable = sizes.find((size) => size.stock > 0)?.label;
     const [selected, setSelected] = useState<string | undefined>(firstAvailable);
 
@@ -43,6 +46,11 @@ export default function ProductBuy({ sizes }: ProductBuyProps) {
             <button
                 type="button"
                 disabled={!selected}
+                onClick={() => {
+                    if (!selected) return;
+                    addItem({ slug: product.slug, sku: product.sku, title: product.title, price: product.price, size: selected });
+                    setOpen(true);
+                }}
                 className="mt-6 h-12 w-full rounded-lg bg-white font-medium text-black disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-white/40"
             >
                 {selected ? "В корзину" : "Нет в наличии"}

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/public/images/logo.jpg";
+import CartButton from "@/components/CartButton";
 
 type NavItem = {
     label: string
@@ -24,6 +25,7 @@ export default function Header() {
                         {item.label}
                     </Link>
                 ))}
+                <CartButton />
             </nav>
         </header>
     );
