@@ -22,6 +22,19 @@
   --text-h3: 18px;
   --text-h3--line-height: 1.35;
   --text-h3--letter-spacing: -0.02em;
+
+  --text-lead: 28px;
+  --text-lead--line-height: 1.35;
+
+
+    --text-display: 80px;
+  --text-display--line-height: 1;
+
+  
+  --text-display-xl: 160px;
+  --text-display-xl--line-height: 1;
+
+
 }
 
 body {
