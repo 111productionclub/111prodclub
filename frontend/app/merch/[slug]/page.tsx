@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { shopEnabled } from "@/lib/flags";
 import Header from "@/components/Header";
 import SectionLabel from "@/components/SectionLabel";
 import ProductBuy from "@/components/ProductBuy";
@@ -86,6 +87,9 @@ async function Product({ params }: { params: Params }) {
 }
 
 export default function ProductPage({ params }: { params: Params }) {
+    if (!shopEnabled) {
+        notFound();
+    }
     return (
         <>
             <Header />

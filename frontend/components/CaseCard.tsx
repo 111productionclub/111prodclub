@@ -1,0 +1,31 @@
+import type { Case } from "@/lib/cases";
+
+type CaseCardProps = {
+    item: Case
+    featured?: boolean
+};
+
+export default function CaseCard({ item, featured = false }: CaseCardProps) {
+    return (
+        <article>
+            <div className={`relative rounded-lg bg-[#141414] ${featured ? "aspect-[1072/467]" : "aspect-[4/3]"}`}>
+                <span className="absolute left-6 top-6 font-mono text-xs text-white/40">{item.number}</span>
+                <span className="absolute inset-0 flex items-center justify-center font-mono text-xs text-white/30">
+                    [ скрин / видео проекта ]
+                </span>
+            </div>
+            <div className="mt-5 flex items-baseline justify-between">
+                <h2 className="text-4xl font-light tracking-tight">{item.title}</h2>
+                <span className="font-mono text-xs text-white/50">{item.year}</span>
+            </div>
+            <p className="mt-3 max-w-[480px] text-sm text-white/70">{item.summary}</p>
+            <ul className="mt-4 flex flex-wrap gap-2">
+                {item.tags.map((tag) => (
+                    <li key={tag} className="rounded-full border border-white/30 px-3 py-1 font-mono text-xs text-white/70">
+                        {tag}
+                    </li>
+                ))}
+            </ul>
+        </article>
+    );
+}
