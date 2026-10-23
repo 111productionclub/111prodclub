@@ -1,0 +1,4 @@
+# Скрипты и конфиги для Linux-сервера всегда с LF: с CRLF из Windows bash и nginx падают
+*.sh text eol=lf
+deploy/* text eol=lf
+Dockerfile text eol=lf

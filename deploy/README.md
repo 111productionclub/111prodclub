@@ -1,83 +1,128 @@
-# Деплой лендинга на сервер студии
+# Деплой на сервер студии
 
-Только фронт (`frontend/`), магазин, вход и корзина скрыты флагом, бэкенд не нужен. Сайт работает как один контейнер `prodclub-web` за общим Caddy (`edge-caddy`), подключается к внешней сети `web`. Порты наружу не публикуются.
+Сайт работает за общим Caddy (`edge-caddy`) в сети `web`. Порты наружу не публикуются, `~/edge/compose.yaml` не трогаем: остальные сайты на сервере не перезапускаются.
 
-Образ собирается внутри Docker (`frontend/Dockerfile`), Node.js на хосте не нужен. Всё проверено локально: compose поднимается, контейнер становится `healthy`, виден по имени `prodclub-web:3000` из сети `web`.
+| Контейнер | Что делает | Сети |
+|---|---|---|
+| `prodclub-web` | сайт на Next.js | internal, web |
+| `prodclub-api` | Django: админка (`/admin`) и API для сайта. При старте сам делает `migrate` и `collectstatic` | internal, web |
+| `prodclub-db` | Postgres 17, данные в томе `prodclub_pgdata` | только internal |
+| `prodclub-files` | nginx: фото кейсов (`/media/`) и стили админки (`/static/`) из томов | web |
 
-## Что нужно перед началом
-- Выбран **домен** лендинга, и его A-записи (`@` и `www`) смотрят на сервер:
-  ```bash
-  dig +short <домен> @<ns-сервер-регистратора>
-  ```
-  Домен добавляется в Caddy **только после** этой проверки, иначе Let's Encrypt забанит выпуск.
-- Сеть `web` существует: `sudo docker network ls | grep web`.
+Магазин, вход и корзина по-прежнему скрыты флагом (`NEXT_PUBLIC_SHOP_ENABLED`).
 
-## 1. Клон репозитория
+## Первый запуск бэкенда
+
+Если сайт уже работает (контейнер `prodclub-web`), делай всё по порядку, сайт при этом не падает.
+
+### 1. Код на сервере
+Распакуй свежий архив поверх старой папки (файл `deploy/.env` в архиве не лежит, он не затрётся):
 ```bash
-cd ~
-git clone https://github.com/111productionclub/111prodclub.git prodclub
-cd prodclub
+cd ~ && tar xzf prodclub-<версия>.tar.gz && cd prodclub
 ```
-Выкладываем из ветки `main` (после слияния PR). До слияния можно проверить ветку: `git switch feat/works-page`.
+Если папка — клон репозитория, вместо этого `git pull`.
 
-## 2. Настройки
+### 2. Настройки
 ```bash
-cp deploy/.env.example deploy/.env
+cp --update=none deploy/.env.example deploy/.env
 chmod 600 deploy/.env
+nano deploy/.env
 ```
-Для запуска лендинга в `deploy/.env` **ничего вписывать не нужно**: пустая `NEXT_PUBLIC_SHOP_ENABLED` оставляет магазин скрытым.
+Заполни:
+- `DOMAIN=111cult.ru`
+- `DJANGO_SECRET_KEY=` вывод команды `openssl rand -base64 48`
+- `POSTGRES_PASSWORD=` вывод `openssl rand -base64 24`
 
-## 3. Сборка и запуск
+Пароль базы задаётся **один раз**: Postgres запоминает его при первом запуске, менять потом в `.env` бесполезно. Сам `.env` никому не отправляй и в git не клади.
+
+Если `.env` остался от прошлого запуска, в нём только `NEXT_PUBLIC_SHOP_ENABLED`: допиши недостающие строки из `deploy/.env.example`.
+
+### 3. Сборка и запуск
 ```bash
-sudo docker compose -f deploy/docker-compose.yml up -d --build web
-sudo docker ps --filter name=prodclub-web      # статус должен стать (healthy), первая сборка 2-5 минут
-sudo docker logs prodclub-web                  # должно быть: ✓ Ready
+sudo docker compose -f deploy/docker-compose.yml up -d --build
+sudo docker ps --filter name=prodclub     # все четыре; web, api и db должны стать (healthy)
+sudo docker logs prodclub-api --tail 30   # Applying ... OK, затем Listening at: http://0.0.0.0:8000
+```
+Первая сборка бэкенда 2–4 минуты.
+
+### 4. Пользователь для админки
+```bash
+sudo docker exec -it prodclub-api python manage.py createsuperuser
+```
+Логин, email (можно пустой) и пароль. Пароль при вводе не отображается, это нормально.
+
+По желанию: 4 кейса из макета как заготовки (без фото), чтобы потом только дописать тексты и загрузить фото:
+```bash
+sudo docker exec prodclub-api python manage.py seed_cases
 ```
 
-## 4. Caddy
-В `deploy/prodclub.caddy` замени `ДОМЕН.RU` на реальный домен, затем:
+### 5. Caddy
+Замени блок сайта на новый: в нём появились `/admin`, `/media` и `/static`.
 ```bash
+cp ~/edge/sites/prodclub.caddy ~/backups/prodclub.caddy.bak-$(date +%F) 2>/dev/null || true
 cp deploy/prodclub.caddy ~/edge/sites/prodclub.caddy
 sudo docker exec edge-caddy caddy validate --config /etc/caddy/Caddyfile && sudo docker exec edge-caddy caddy reload --config /etc/caddy/Caddyfile
 ```
-`validate` должен пройти без ошибок, только тогда `reload`. Остальные сайты при этом не останавливаются.
+Домен в `deploy/prodclub.caddy` должен совпадать с `DOMAIN` из `.env`. `validate` проверяет конфиг до перезагрузки: если он с ошибкой, `reload` не выполнится и всё продолжит работать по-старому.
 
-## 5. Проверка
-- `https://<домен>` открывается, сертификат выдан, `/works` работает, фильтры тоже.
-- В шапке только «Как мы работаем» и «Работы».
-- `/merch` и `/login` дают 404 (так и должно быть).
-- Контейнер без опубликованных портов: `sudo docker port prodclub-web` ничего не выводит.
+### 6. Проверка
+- `https://111cult.ru/admin/` открывает вход в админку **со стилями** (без стилей = не работает `/static`, см. «Частые проблемы»);
+- после входа есть раздел «Кейсы»;
+- добавь кейс с фото: оно должно появиться на `https://111cult.ru/works` и на странице кейса;
+- база снаружи не видна: `sudo docker port prodclub-db` ничего не выводит.
 
-## Обновление сайта
+## Как добавлять кейсы
+`https://111cult.ru/admin/` → «Кейсы» → «Добавить кейс».
+- Первое фото = обложка на `/works` и главный экран кейса, остальные идут в галерею.
+- Фото автоматически конвертируются в WebP трёх размеров (480, 960, 1600px), оригинал не хранится. Можно грузить большие JPG и PNG прямо с телефона или из Figma.
+- Пустые поля (задача, метрики, цитата) на странице кейса не показываются.
+- Снятая галочка «опубликован» прячет кейс с сайта, не удаляя его.
+
+Изменения появляются на сайте сразу, пересборка не нужна.
+
+## Обновление
+1. Залей и распакуй новый архив (шаг 1).
+2. Запусти:
+   ```bash
+   ~/prodclub/deploy/update.sh
+   ```
+Скрипт делает бэкап базы в `~/backups/`, запоминает образ сайта для отката, пересобирает фронт и бэкенд и ждёт `healthy`.
+
+## Бэкапы
+База сама по себе в бэкап не попадает. Вручную:
 ```bash
-~/prodclub/deploy/update.sh
+mkdir -p ~/backups
+sudo docker exec prodclub-db sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' | gzip > ~/backups/prodclub-db-$(date +%F).sql.gz
+sudo docker run --rm -v prodclub_media:/media -v ~/backups:/out alpine tar czf /out/prodclub-media-$(date +%F).tar.gz -C /media .
 ```
-Скрипт сохраняет текущий образ как `prodclub-web:prev`, делает `git pull --ff-only`, пересобирает контейнер и ждёт `healthy`. Если не стал healthy, выведет подсказку про логи и откат.
+Первая команда сохраняет базу (тексты кейсов), вторая — фото.
 
-## Откат
+Восстановление базы из бэкапа (перезапишет текущие данные):
+```bash
+gunzip -c ~/backups/prodclub-db-<дата>.sql.gz | sudo docker exec -i prodclub-db sh -c 'psql -U "$POSTGRES_USER" "$POSTGRES_DB"'
+```
+
+## Откат сайта
 ```bash
 ~/prodclub/deploy/rollback.sh
 ```
-Возвращает образ `prodclub-web:prev` (предыдущую рабочую сборку). Код в git при этом не откатывается: до исправления причины не делай `git pull`.
-
-Откат вручную, если скрипта нет: `git log --oneline`, `git switch --detach <коммит>`, затем шаг 3.
-
-## Когда будет готов магазин
-1. Развернуть бэкенд (`backend/`, Django + Postgres) в этом же проекте во внутренней сети, **без публикации портов**, и добавить отдельный адрес в Caddy.
-2. В `deploy/.env` поставить `NEXT_PUBLIC_SHOP_ENABLED=1`, пересобрать (`deploy/update.sh`): значение вшивается в сборку, перезапуска недостаточно.
-3. Фронту нужен адрес бэкенда (`API_URL`, имя контейнера бэкенда во внутренней сети) и боевой домен в `CORS_ALLOWED_ORIGINS` Django.
+Возвращает предыдущую сборку фронта (`prodclub-web:prev`). Бэкенд так не откатывается: миграции базы необратимы. Если обновление бэкенда сломало данные, восстанавливай базу из бэкапа, который `update.sh` сделал перед обновлением.
 
 ## Что нельзя
-- `sudo docker compose down -v` на чужих проектах: удалит их тома. Для этого проекта томов нет, но привычка опасна.
+- **`docker compose down -v`**: удалит тома с базой и фото. Просто остановить: `sudo docker compose -f deploy/docker-compose.yml stop`.
 - Добавлять `ports:` в compose: Docker обходит ufw для опубликованных портов.
-- Класть секреты и реальные IP/логины сервера в репозиторий.
+- Включать `SECURE_SSL_REDIRECT` в Django: сайт ходит в API по внутреннему http, редирект сломает загрузку кейсов. На https переводит Caddy.
+- Класть `deploy/.env`, пароли и IP сервера в репозиторий.
 
 ## Частые проблемы
 | Симптом | Причина |
 |---|---|
-| 502 от Caddy | `prodclub-web` не запущен или не в сети `web`: `sudo docker ps`, `sudo docker network inspect web` |
-| Контейнер не становится healthy | `sudo docker logs prodclub-web` |
+| `compose` пишет `впиши ... в deploy/.env` | не заполнен `DJANGO_SECRET_KEY` или `POSTGRES_PASSWORD` |
+| `prodclub-api` перезапускается по кругу | `sudo docker logs prodclub-api`: чаще всего не тот пароль базы (пароль менялся после первого запуска) |
+| 502 на `/admin` | `prodclub-api` не запущен или не `healthy` |
+| Админка без стилей | не применён новый `prodclub.caddy` (нет `/static`) или не запущен `prodclub-files` |
+| CSRF verification failed при входе в админку | `DOMAIN` в `.env` не совпадает с адресом в браузере |
+| На `/works` нет новых кейсов, только 4 старых без фото | сайт не достучался до API: `sudo docker logs prodclub-api`, затем `sudo docker restart prodclub-web` |
+| Фото не грузятся (битые картинки) | не применён новый `prodclub.caddy` (нет `/media`) |
+| Страницы грузятся кусками | в блоке Caddy нет `flush_interval -1` |
 | Сборка падает на `pnpm install` | не влиты `frontend/pnpm-workspace.yaml` и `frontend/pnpm-lock.yaml` |
-| Страница не обновилась после `git pull` | пересобрали без `--build`, используй `deploy/update.sh` |
-| В шапке снова мерч | образ собран с `NEXT_PUBLIC_SHOP_ENABLED=1` в `deploy/.env` |
-| Страницы грузятся кусками | в блоке Caddy: `reverse_proxy prodclub-web:3000 { flush_interval -1 }` |
