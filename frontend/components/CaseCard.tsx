@@ -15,7 +15,8 @@ export default function CaseCard({ item, featured = false }: CaseCardProps) {
                     <CasePhoto
                         image={item.cover}
                         alt={item.title}
-                        sizes={featured ? "(min-width: 1280px) 1072px, 100vw" : "(min-width: 1280px) 520px, 50vw"}
+                        // Реальная ширина в сетке /works: экран минус px-[104px] с двух сторон (и gap-x-8 между колонками)
+                        sizes={featured ? "calc(100vw - 208px)" : "calc((100vw - 240px) / 2)"}
                         preload={featured}
                         className="absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-[1.02]"
                     />

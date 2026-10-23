@@ -48,6 +48,7 @@ class CaseImage(models.Model):
     caption = models.CharField("подпись", max_length=100, blank=True, help_text="Первое фото — обложка и главный экран")
     order = models.PositiveSmallIntegerField("порядок", default=0)
     key = models.CharField(max_length=16, editable=False)
+    original = models.CharField(max_length=255, blank=True, editable=False)
     width = models.PositiveIntegerField(null=True, editable=False)
     height = models.PositiveIntegerField(null=True, editable=False)
     widths = models.JSONField(default=list, editable=False)
@@ -61,7 +62,7 @@ class CaseImage(models.Model):
         # Новый файл из формы ещё не сохранён (_committed=False): вместо оригинала
         # пишем WebP-варианты, а в поле оставляем самый крупный из них.
         if self.image and not self.image._committed:
-            self.key, self.width, self.height, self.widths = optimize(self.image.file)
+            self.key, self.original, self.width, self.height, self.widths = optimize(self.image.file)
             self.image.name = variant_name(self.key, self.widths[-1])
             self.image._committed = True
         super().save(*args, **kwargs)

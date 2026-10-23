@@ -3,10 +3,14 @@ import tempfile
 from io import BytesIO
 from pathlib import Path
 
+from io import StringIO
+
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
 from django.test import TestCase, override_settings
 from PIL import Image
 
+from .images import variant_name
 from .models import Case, CaseImage
 
 MEDIA = tempfile.mkdtemp()
@@ -32,15 +36,24 @@ class CaseImageTests(TestCase):
         )
 
     def test_three_webp_sizes(self):
-        photo = CaseImage.objects.create(case=self.case, image=upload(2400, 1200))
-        self.assertEqual(photo.widths, [480, 960, 1600])
-        self.assertEqual((photo.width, photo.height), (2400, 1200))
-        self.assertTrue(photo.image.name.endswith("-1600.webp"))
+        photo = CaseImage.objects.create(case=self.case, image=upload(3000, 1500))
+        self.assertEqual(photo.widths, [640, 1280, 2560])
+        self.assertEqual((photo.width, photo.height), (3000, 1500))
+        self.assertTrue(photo.image.name.endswith("-2560.webp"))
         for name, width in photo.variants():
             with Image.open(Path(MEDIA) / name) as saved:
                 self.assertEqual(saved.format, "WEBP")
                 self.assertEqual(saved.size, (width, width // 2))
-        self.assertFalse(list(Path(MEDIA).rglob("*.jpg")), "оригинал не должен сохраняться")
+        self.assertTrue(photo.original.endswith(".jpg"))
+        self.assertTrue((Path(MEDIA) / photo.original).exists(), "оригинал сохраняется для пересборки")
+
+    def test_rebuild_from_original(self):
+        photo = CaseImage.objects.create(case=self.case, image=upload(3000, 1500, "purple"))
+        CaseImage.objects.filter(pk=photo.pk).update(widths=[480], image=variant_name(photo.key, 480))
+        call_command("rebuild_case_images", stdout=StringIO())
+        photo.refresh_from_db()
+        self.assertEqual(photo.widths, [640, 1280, 2560])
+        self.assertTrue(photo.image.name.endswith("-2560.webp"))
 
     def test_small_photo_not_upscaled(self):
         photo = CaseImage.objects.create(case=self.case, image=upload(300, 200, "blue"))
@@ -63,7 +76,7 @@ class CaseImageTests(TestCase):
         self.assertEqual(cases[0]["tags"], ["лендинг", "Django"])
         cover = cases[0]["cover"]
         self.assertTrue(cover["src"].startswith("/media/cases/"))
-        self.assertEqual([entry.split()[1] for entry in cover["srcset"].split(", ")], ["480w", "960w", "1600w"])
+        self.assertEqual([entry.split()[1] for entry in cover["srcset"].split(", ")], ["640w", "1280w", "2000w"])
 
         detail = self.client.get("/api/cases/test/").json()
         self.assertIsNone(detail["quote"])
