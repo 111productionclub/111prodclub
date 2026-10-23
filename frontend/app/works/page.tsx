@@ -4,7 +4,7 @@ import SectionLabel from "@/components/SectionLabel";
 import CategoryFilter, { type FilterCategory } from "@/components/CategoryFilter";
 import CaseCard from "@/components/CaseCard";
 import CtaNextProject from "@/components/CtaNextProject";
-import { cases } from "@/lib/cases";
+import { getCases } from "@/lib/cases";
 
 type SearchParams = Promise<{ category?: string }>;
 
@@ -17,7 +17,8 @@ const categories: FilterCategory[] = [
 
 async function Cases({ searchParams }: { searchParams: SearchParams }) {
     const { category } = await searchParams;
-    const list = category ? cases.filter((item) => item.category === category) : cases;
+    const cases = await getCases();
+    const list =category ? cases.filter((item) => item.category === category) : cases;
     const [first, ...rest] = list;
 
     return (

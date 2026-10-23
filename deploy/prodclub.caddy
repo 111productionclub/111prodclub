@@ -1,5 +1,30 @@
 # Копируется на сервер в ~/edge/sites/prodclub.caddy
-# ЗАМЕНИ ДОМЕН: сюда подставляется домен лендинга (A-записи @ и www должны уже смотреть на сервер).
-ДОМЕН.RU, www.ДОМЕН.RU {
-    reverse_proxy prodclub-web:3000
+# Домен должен совпадать с DOMAIN в deploy/.env
+111cult.ru, www.111cult.ru {
+        header {
+                Strict-Transport-Security "max-age=31536000; includeSubDomains"
+                X-Content-Type-Options "nosniff"
+                Referrer-Policy "strict-origin-when-cross-origin"
+        }
+        encode gzip
+
+        # Админка Django (кейсы, товары)
+        handle /admin* {
+                reverse_proxy prodclub-api:8000
+        }
+
+        # Фото кейсов и стили админки
+        handle /media/* {
+                reverse_proxy prodclub-files:80
+        }
+        handle /static/* {
+                reverse_proxy prodclub-files:80
+        }
+
+        # Всё остальное — сайт на Next.js
+        handle {
+                reverse_proxy prodclub-web:3000 {
+                        flush_interval -1
+                }
+        }
 }
