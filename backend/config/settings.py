@@ -28,7 +28,21 @@ AUTH_USER_MODEL = "users.User"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == "1"
 
-ALLOWED_HOSTS = []
+
+def env_list(name, default=""):
+    return [item.strip() for item in os.environ.get(name, default).split(",") if item.strip()]
+
+
+# Локально (DEBUG=1) пустой список разрешает localhost. На сервере задаётся в deploy/docker-compose.yml
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS")
+# Нужен для входа в админку по https: https://111cult.ru,https://www.111cult.ru
+CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
+
+# На сервере Django стоит за Caddy, который принимает https и передаёт схему в X-Forwarded-Proto
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
 # Application definition
@@ -44,6 +58,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'users',
     'shop',
+    'cases',
 ]
 
 MIDDLEWARE = [
@@ -126,6 +141,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+# Сюда collectstatic собирает стили админки. На сервере их раздаёт контейнер prodclub-files
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+# Загруженные файлы (фото кейсов и товаров). Папка media/ в .gitignore
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS", "http://localhost:3000")
