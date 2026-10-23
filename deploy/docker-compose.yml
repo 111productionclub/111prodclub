@@ -1,0 +1,24 @@
+name: prodclub
+
+services:
+  web:
+    build:
+      context: ../frontend
+      args:
+        # NEXT_PUBLIC_* вшивается в сборку: меняется только пересборкой (см. deploy/README.md)
+        NEXT_PUBLIC_SHOP_ENABLED: ${NEXT_PUBLIC_SHOP_ENABLED:-}
+    image: prodclub-web:latest
+    container_name: prodclub-web
+    restart: unless-stopped
+    networks: [internal, web]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+networks:
+  internal: {}
+  web:
+    external: true
