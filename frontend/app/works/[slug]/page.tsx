@@ -72,7 +72,7 @@ async function CaseContent({ params }: { params: Params }) {
                         <CasePhoto
                             image={hero}
                             alt={hero.caption || item.title}
-                            sizes="(min-width: 1280px) 1072px, 100vw"
+                            sizes="calc(100vw - 208px)"
                             preload
                             className="absolute inset-0 h-full w-full"
                         />
@@ -103,7 +103,7 @@ async function CaseContent({ params }: { params: Params }) {
                                 <CasePhoto
                                     image={image}
                                     alt={image.caption || item.title}
-                                    sizes="(min-width: 1280px) 524px, 50vw"
+                                    sizes="calc((100vw - 232px) / 2)"
                                     className="absolute inset-0 h-full w-full"
                                 />
                             </figure>
