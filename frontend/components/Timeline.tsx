@@ -1,4 +1,5 @@
 import SectionLabel from "./SectionLabel";
+import Reveal from "./Reveal";
 type TimelineItem = {
     title: string;
     duration: string;
@@ -15,11 +16,13 @@ export default function Timeline() {
         <section className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] lg:gap-x-24 px-5 py-16 md:px-[104px] md:py-24">
             <div>
                 <SectionLabel>/ 02 — сроки</SectionLabel>
-                <h2 className="mt-2 text-display-m md:text-display md:tracking-normal">
-                    Сколько
-                    <br />
-                    ждать
-                </h2>
+                <Reveal variant="glitch" delay={250}>
+                    <h2 className="mt-2 text-display-m md:text-display md:tracking-normal">
+                        Сколько
+                        <br />
+                        ждать
+                    </h2>
+                </Reveal>
             </div>
 
 

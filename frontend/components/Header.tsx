@@ -16,11 +16,14 @@ const navItems: NavItem[] = [
     { label: "Купить мерч", href: "/merch", shop: true },
     { label: "Вход для клиентов", href: "/login", shop: true },
 ];
-export default function Header() {
+export default function Header({ intro = false }: { intro?: boolean }) {
     const items = navItems.filter((item) => shopEnabled || !item.shop);
 
     return (
-        <header className="flex h-[84px] items-center justify-between px-5 md:h-32 md:px-12">
+        <header
+            className={`flex h-[84px] items-center justify-between px-5 md:h-32 md:px-12 ${intro ? "intro-fade-in" : ""}`}
+            style={intro ? ({ "--intro-delay": "2.4s" } as React.CSSProperties) : undefined}
+        >
             <Link href="/">
                 <Image src={logo} alt="111 production club" width={87} height={86} 
                     sizes="(min-width: 768px) 87px, 52px"

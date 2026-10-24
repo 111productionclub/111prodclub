@@ -3,18 +3,24 @@ import Hero from "@/components/Hero";
 import Process from "@/components/Process";
 import Timeline from "@/components/Timeline";
 import Landing from "@/components/Landing";
+import Reveal from "@/components/Reveal";
 
 export default function Home() {
   return (
     <>
-      <Header />
+      <Header intro />
       <main>
         <Hero />
-        <Process />
-        <Timeline />
-        <Landing />
+        <Reveal waitFor={2900}>
+          <Process />
+        </Reveal>
+        <Reveal>
+          <Timeline />
+        </Reveal>
+        <Reveal>
+          <Landing />
+        </Reveal>
       </main>
     </>
-
   );
 }

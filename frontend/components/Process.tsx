@@ -1,4 +1,5 @@
 import SectionLabel from "./SectionLabel";
+import Reveal from "./Reveal";
 
 
 type Step = {
@@ -40,7 +41,9 @@ export default function Process() {
             <SectionLabel>
                 / 01 — как мы работаем
             </SectionLabel>
-            <h2 className="text-h1 mt-2">От идеи до запуска</h2>
+            <Reveal variant="glitch" delay={250}>
+                <h2 className="text-h1 mt-2">От идеи до запуска</h2>
+            </Reveal>
 
             <ol className="mt-8 md:mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:gap-x-24 md:gap-y-12 lg:gap-y-0">
                 {steps.map((step) => (
