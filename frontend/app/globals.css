@@ -35,6 +35,8 @@
   --text-display-xl--line-height: 1;
 
 
+  --text-case-title: clamp(48px, 15cqw, 160px);
+  --text-case-title--line-height: 1;
 }
 
 body {
