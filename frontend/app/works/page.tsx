@@ -4,6 +4,7 @@ import SectionLabel from "@/components/SectionLabel";
 import CategoryFilter, { type FilterCategory } from "@/components/CategoryFilter";
 import CaseCard from "@/components/CaseCard";
 import CtaNextProject from "@/components/CtaNextProject";
+import Reveal from "@/components/Reveal";
 import { getCases } from "@/lib/cases";
 
 type SearchParams = Promise<{ category?: string }>;
@@ -26,22 +27,26 @@ async function Cases({ searchParams }: { searchParams: SearchParams }) {
             <div className="flex flex-col items-start gap-7 md:flex-row md:items-end md:justify-between">
                 <div>
                     <SectionLabel>/ работы — {String(list.length).padStart(2, "0")}</SectionLabel>
-                    <h1 className="mt-2 text-hero-sm md:mt-4 md:text-hero">Кейсы</h1>
+                    <h1 className="glitch glitch-quick mt-2 text-hero-sm md:mt-4 md:text-hero" data-text="Кейсы">
+                        Кейсы
+                    </h1>
                 </div>
                 <CategoryFilter categories={categories} basePath="/works" active={category} />
             </div>
 
             {first ? (
-                <div className="mt-10 space-y-12 md:mt-20 md:space-y-14">
-                    <CaseCard item={first} featured />
-                    {rest.length > 0 && (
-                        <div className="grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-8 md:gap-y-14">
-                            {rest.map((item) => (
-                                <CaseCard key={item.slug} item={item} />
-                            ))}
-                        </div>
-                    )}
-                </div>
+                <Reveal>
+                    <div className="mt-10 space-y-12 md:mt-20 md:space-y-14">
+                        <CaseCard item={first} featured />
+                        {rest.length > 0 && (
+                            <div className="grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-8 md:gap-y-14">
+                                {rest.map((item) => (
+                                    <CaseCard key={item.slug} item={item} />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </Reveal>
             ) : (
                 <p className="mt-10 text-h3 text-white/50 md:mt-20">В этой категории пока ничего нет</p>
             )}
@@ -59,7 +64,9 @@ export default function WorksPage({ searchParams }: { searchParams: SearchParams
                         <Cases searchParams={searchParams} />
                     </Suspense>
                 </div>
-                <CtaNextProject />
+                <Reveal>
+                    <CtaNextProject />
+                </Reveal>
             </main>
         </>
     );

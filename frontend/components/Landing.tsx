@@ -1,4 +1,5 @@
 import SectionLabel from "./SectionLabel";
+import Reveal from "./Reveal";
 import Link from "next/link";
 const points: string[] = [
     "Пишем код руками, без конструкторов.",
@@ -10,7 +11,9 @@ export default function Landing() {
         <section className="bg-white text-black grid grid-cols-1 lg:grid-cols-2 items-end px-5 pt-16 pb-[72px] md:px-[104px] md:py-36">
             <div>
                 <SectionLabel>/ 03 — Лендинг</SectionLabel>
-                <p className="text-display-xl-m md:text-display-xl md:tracking-normal">7 дней</p>
+                <Reveal variant="glitch" delay={250}>
+                    <p className="text-display-xl-m md:text-display-xl md:tracking-normal">7 дней</p>
+                </Reveal>
             </div>
             <div className="flex flex-col gap-3 md:gap-4 mt-6 lg:mt-0">
                 {points.map((point) => (
