@@ -23,19 +23,19 @@ async function Cases({ searchParams }: { searchParams: SearchParams }) {
 
     return (
         <>
-            <div className="flex items-end justify-between">
+            <div className="flex flex-col items-start gap-7 md:flex-row md:items-end md:justify-between">
                 <div>
                     <SectionLabel>/ работы — {String(list.length).padStart(2, "0")}</SectionLabel>
-                    <h1 className="mt-4 text-hero">Кейсы</h1>
+                    <h1 className="mt-2 text-hero-sm md:mt-4 md:text-hero">Кейсы</h1>
                 </div>
                 <CategoryFilter categories={categories} basePath="/works" active={category} />
             </div>
 
             {first ? (
-                <div className="mt-20 space-y-14">
+                <div className="mt-10 space-y-12 md:mt-20 md:space-y-14">
                     <CaseCard item={first} featured />
                     {rest.length > 0 && (
-                        <div className="grid grid-cols-2 gap-x-8 gap-y-14">
+                        <div className="grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-8 md:gap-y-14">
                             {rest.map((item) => (
                                 <CaseCard key={item.slug} item={item} />
                             ))}
@@ -43,7 +43,7 @@ async function Cases({ searchParams }: { searchParams: SearchParams }) {
                     )}
                 </div>
             ) : (
-                <p className="mt-20 text-h3 text-white/50">В этой категории пока ничего нет</p>
+                <p className="mt-10 text-h3 text-white/50 md:mt-20">В этой категории пока ничего нет</p>
             )}
         </>
     );
@@ -54,7 +54,7 @@ export default function WorksPage({ searchParams }: { searchParams: SearchParams
         <>
             <Header />
             <main>
-                <div className="px-[104px] pb-32 pt-24">
+                <div className="px-5 pb-16 pt-12 md:px-[104px] md:pb-32 md:pt-24">
                     <Suspense fallback={<p className="text-h3 text-white/50">Загружаем…</p>}>
                         <Cases searchParams={searchParams} />
                     </Suspense>
