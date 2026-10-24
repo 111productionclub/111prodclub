@@ -63,7 +63,7 @@ body {
 }
 
 /* ===== Анимации: заставка, появление при прокрутке =====
-   Глитч с красно-голубым расщеплением: заголовок собирается из сдвинутых слоёв, амплитуда затухает,
+   Чёрно-белый глитч: заголовок собирается из сдвинутых срезов того же белого цвета, амплитуда затухает,
    надпись встаёт на место. Яркость не мигает, меняется только положение, поэтому правило WCAG 2.3.1
    (не больше 3 вспышек в секунду) не нарушается.
    Главная: полная заставка (чёрный экран, глитч 1,5 с, линия развёртки). Остальные страницы: тот же
@@ -99,30 +99,28 @@ body {
   72%, 100% { opacity: 1; transform: none; }
 }
 
-/* rgb: красный и голубой слои расходятся в стороны и сходятся */
-@keyframes glitch-rgb-r {
+/* Срезы того же белого цвета, сдвинутые в стороны */
+@keyframes glitch-slice-a {
   0%, 7%    { opacity: 0; }
-  8%        { opacity: 1; clip-path: inset(0 0 55% 0);  transform: translateX(-18px); }
-  16%       { clip-path: inset(0);                      transform: translateX(-12px); }
-  24%       { clip-path: inset(40% 0 20% 0);            transform: translateX(-22px); }
-  32%       { clip-path: inset(0);                      transform: translateX(-9px); }
-  44%       { clip-path: inset(0);                      transform: translateX(-6px); }
-  56%       { clip-path: inset(60% 0 0 0);              transform: translateX(-4px); }
-  68%       { clip-path: inset(0);                      transform: translateX(-2px); }
-  76%       { transform: translateX(-1px); }
-  84%, 100% { opacity: 0; transform: none; }
+  8%        { opacity: 1; clip-path: inset(10% 0 62% 0); transform: translateX(-26px); }
+  16%       { clip-path: inset(48% 0 20% 0); transform: translateX(22px); }
+  24%       { clip-path: inset(70% 0 6% 0);  transform: translateX(-18px); }
+  32%       { clip-path: inset(22% 0 55% 0); transform: translateX(14px); }
+  44%       { clip-path: inset(58% 0 12% 0); transform: translateX(-10px); }
+  56%       { clip-path: inset(34% 0 40% 0); transform: translateX(6px); }
+  68%       { clip-path: inset(8% 0 80% 0);  transform: translateX(-4px); }
+  76%, 100% { opacity: 0; clip-path: inset(0); transform: none; }
 }
-@keyframes glitch-rgb-c {
+@keyframes glitch-slice-b {
   0%, 7%    { opacity: 0; }
-  8%        { opacity: 1; clip-path: inset(45% 0 0 0);  transform: translateX(18px); }
-  16%       { clip-path: inset(0);                      transform: translateX(12px); }
-  24%       { clip-path: inset(10% 0 50% 0);            transform: translateX(22px); }
-  32%       { clip-path: inset(0);                      transform: translateX(9px); }
-  44%       { clip-path: inset(0);                      transform: translateX(6px); }
-  56%       { clip-path: inset(0 0 60% 0);              transform: translateX(4px); }
-  68%       { clip-path: inset(0);                      transform: translateX(2px); }
-  76%       { transform: translateX(1px); }
-  84%, 100% { opacity: 0; transform: none; }
+  8%        { opacity: 1; clip-path: inset(60% 0 14% 0); transform: translateX(24px); }
+  16%       { clip-path: inset(6% 0 76% 0);  transform: translateX(-20px); }
+  24%       { clip-path: inset(36% 0 40% 0); transform: translateX(16px); }
+  32%       { clip-path: inset(78% 0 4% 0);  transform: translateX(-12px); }
+  44%       { clip-path: inset(18% 0 62% 0); transform: translateX(9px); }
+  56%       { clip-path: inset(52% 0 26% 0); transform: translateX(-7px); }
+  68%       { clip-path: inset(80% 0 6% 0);  transform: translateX(3px); }
+  76%, 100% { opacity: 0; clip-path: inset(0); transform: none; }
 }
 
 /* Заголовки секций при прокрутке: короткий глитч без дублирующих слоёв */
@@ -132,11 +130,6 @@ body {
   40%       { transform: translateX(-5px) skewX(5deg); }
   60%       { transform: translateX(3px); }
   80%, 100% { opacity: 1; transform: none; }
-}
-@keyframes glitch-shadow {
-  0%   { text-shadow: -6px 0 #ff3b5c, 6px 0 #29e6ff; }
-  60%  { text-shadow: -3px 0 #ff3b5c, 3px 0 #29e6ff; }
-  100% { text-shadow: 0 0 #0000, 0 0 #0000; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -155,14 +148,13 @@ body {
     z-index: -1;
     pointer-events: none;
     user-select: none;
-    mix-blend-mode: screen;
     animation-duration: var(--glitch-duration, 1.5s);
     animation-delay: var(--glitch-delay, 0.3s);
     animation-fill-mode: both;
     animation-timing-function: steps(1, end);
   }
-  .glitch::before { color: #ff3b5c; animation-name: glitch-rgb-r; }
-  .glitch::after  { color: #29e6ff; animation-name: glitch-rgb-c; }
+  .glitch::before { animation-name: glitch-slice-a; }
+  .glitch::after  { animation-name: glitch-slice-b; }
 
   /* Линия развёртки на первом экране главной */
   .intro-scan { position: relative; overflow: hidden; }
@@ -172,7 +164,7 @@ body {
     inset: 0 0 auto 0;
     height: 96px;
     pointer-events: none;
-    background: linear-gradient(to bottom, transparent, rgba(41, 230, 255, 0.13) 45%, rgba(255, 59, 92, 0.13) 55%, transparent);
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1) 50%, transparent);
     animation: scan 1.1s linear 1.7s both;
   }
 
@@ -185,7 +177,7 @@ body {
     [data-reveal]:not([data-shown="true"]) { opacity: 0; }
     [data-reveal="fade"][data-shown="true"]   { animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
     [data-reveal="glitch"][data-shown="true"] {
-      animation: glitch-lite 0.5s steps(1, end) both, glitch-shadow 0.6s linear both;
+      animation: glitch-lite 0.5s steps(1, end) both;
     }
   }
 }
