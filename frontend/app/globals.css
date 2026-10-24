@@ -15,6 +15,11 @@
   --text-hero--line-height: 0.95;
   --text-hero--letter-spacing: -0.03em;
 
+  --text-hero-sm: 88px;
+  --text-hero-sm--line-height: 0.9;
+  --text-hero-sm--letter-spacing: -0.05em;
+
+  
   --text-hero-m: 56px;
   --text-hero-m--line-height: 0.95;
   --text-hero-m--letter-spacing: -0.03em;
