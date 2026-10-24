@@ -12,10 +12,10 @@ const items: TimelineItem[] = [
 ];
 export default function Timeline() {
     return (
-        <section className="grid grid-cols-[1fr_2fr] gap-x-24 px-[104px] py-24">
+        <section className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] lg:gap-x-24 px-5 py-16 md:px-[104px] md:py-24">
             <div>
                 <SectionLabel>/ 02 — сроки</SectionLabel>
-                <h2 className="mt-2 text-display">
+                <h2 className="mt-2 text-display-m md:text-display md:tracking-normal">
                     Сколько
                     <br />
                     ждать
@@ -23,12 +23,12 @@ export default function Timeline() {
             </div>
 
 
-            <ul>
+            <ul className="mt-8 lg:mt-0">
                 {items.map(
                     (item) => (
-                        <li key={item.title} className="flex items-center justify-between py-6">
-                            <span className="text-2xl">{item.title}</span>
-                            <span className="text-xs text-white/50">{item.duration}</span>
+                        <li key={item.title} className="flex items-center justify-between py-5 md:py-6 border-t border-white/30 lg:border-0 gap-4">
+                            <span className="text-xl md:text-2xl min-w-0">{item.title}</span>
+                            <span className="text-xs text-white/50 shrink-0 whitespace-nowrap">{item.duration}</span>
                         </li>
                     ))}
             </ul>

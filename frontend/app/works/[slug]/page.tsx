@@ -34,8 +34,8 @@ async function CaseContent({ params }: { params: Params }) {
 
     return (
         <>
-            <div className="px-[104px] pb-32 pt-12">
-                <Link href="/works" className="text-h3 text-white/50 hover:text-white">
+            <div className="px-5 md:px-[104px] pb-16 pt-6 md:pb-32 md:pt-12 @container">
+                <Link href="/works" className="test-sm md:text-h3 text-white/50 hover:text-white">
                     ← Все работы
                 </Link>
 
@@ -43,21 +43,21 @@ async function CaseContent({ params }: { params: Params }) {
                     <SectionLabel>
                         / кейс {item.number} — {item.kind}
                     </SectionLabel>
-                    <h1 className="mt-4 text-display-xl">{item.title}</h1>
+                    <h1 className="mt-4 text-case-title wrap-break-word">{item.title}</h1>
                 </div>
 
                 {(meta.length > 0 || item.url) && (
-                    <dl className="mt-12 grid grid-cols-4 gap-6 border-t border-white/30 pt-6">
+                    <dl className="mt-8 md:mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 border-t border-white/30 pt-6">
                         {meta.map((entry) => (
-                            <div key={entry.label}>
+                            <div key={entry.label} className="min-w-0">
                                 <dt className="font-mono text-xs text-white/50">{entry.label}</dt>
-                                <dd className="mt-2">{entry.value}</dd>
+                                <dd className="mt-2 wrap-break-word">{entry.value}</dd>
                             </div>
                         ))}
                         {item.url && (
                             <div>
                                 <dt className="font-mono text-xs text-white/50">ссылка</dt>
-                                <dd className="mt-2">
+                                <dd className="mt-2 wrap-break-word">
                                     <a href={item.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
                                         {item.url.replace(/^https?:\/\//, "").replace(/\/$/, "")} ↗
                                     </a>
@@ -67,12 +67,12 @@ async function CaseContent({ params }: { params: Params }) {
                     </dl>
                 )}
 
-                <div className="relative mt-14 aspect-[2/1] overflow-hidden rounded-lg bg-[#141414]">
+                <div className="relative mt-8 md:mt-14 aspect-[3/2] md:aspect-[2/1] overflow-hidden rounded-lg bg-[#141414]">
                     {hero ? (
                         <CasePhoto
                             image={hero}
                             alt={hero.caption || item.title}
-                            sizes="calc(100vw - 208px)"
+                            sizes="(min-width: 768px) calc(100vw - 208px), calc(100vw - 40px)"
                             preload
                             className="absolute inset-0 h-full w-full"
                         />
@@ -84,26 +84,26 @@ async function CaseContent({ params }: { params: Params }) {
                 </div>
 
                 {story.length > 0 && (
-                    <div className="mt-28 flex flex-col gap-20">
+                    <div className="mt-16 md:mt-28 flex flex-col gap-12 md:gap-20">
                         {story.map((entry, position) => (
-                            <section key={entry.label} className="grid grid-cols-[240px_1fr] gap-16">
+                            <section key={entry.label} className="grid grid-cols-1 gap-3 md:grid-cols-[240px_1fr] md:gap-16">
                                 <h2 className="text-sm text-white/50">
                                     {String(position + 1).padStart(2, "0")} — {entry.label}
                                 </h2>
-                                <p className="whitespace-pre-line text-lead">{entry.text}</p>
+                                <p className="whitespace-pre-line text-xl md:text-lead">{entry.text}</p>
                             </section>
                         ))}
                     </div>
                 )}
 
                 {gallery.length > 0 && (
-                    <div className="mt-28 grid grid-cols-2 gap-6">
+                    <div className="mt-16 md:mt-28 grid grid-cols-2 gap-3 md:gap-6">
                         {gallery.map((image) => (
                             <figure key={image.src} className="relative aspect-[524/655] overflow-hidden rounded-lg bg-[#141414]">
                                 <CasePhoto
                                     image={image}
                                     alt={image.caption || item.title}
-                                    sizes="calc((100vw - 232px) / 2)"
+                                    sizes="(min-width: 768px) calc((100vw - 232px) / 2), calc((100vw - 52px) / 2)"
                                     className="absolute inset-0 h-full w-full"
                                 />
                             </figure>
@@ -112,12 +112,12 @@ async function CaseContent({ params }: { params: Params }) {
                 )}
 
                 {item.metrics.length > 0 && (
-                    <section className="mt-28 grid grid-cols-[240px_1fr] gap-16">
+                    <section className="mt-16 md:mt-28 grid grid-cols-1 gap-3 md:grid-cols-[240px_1fr] md:gap-16">
                         <h2 className="text-sm text-white/50">{resultNumber} — результат</h2>
-                        <ul className="grid grid-cols-3 gap-8">
+                        <ul className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
                             {item.metrics.map((metric) => (
                                 <li key={metric.label} className="border-t border-white pt-4">
-                                    <p className="text-display">{metric.value}</p>
+                                    <p className="text-5xl md:text-display">{metric.value}</p>
                                     <p className="mt-3 text-xs text-white/50">{metric.label}</p>
                                 </li>
                             ))}
@@ -126,21 +126,21 @@ async function CaseContent({ params }: { params: Params }) {
                 )}
 
                 {item.quote && (
-                    <figure className="mt-24 border-t border-white/30 pt-16">
-                        <blockquote className="max-w-[1000px] text-lead">«{item.quote.text}»</blockquote>
+                    <figure className="mt-16 md:mt-24 pt-10 md:pt-16 border-t border-white/30">
+                        <blockquote className="max-w-[1000px] text-xl md:text-lead">«{item.quote.text}»</blockquote>
                         {item.quote.author && <figcaption className="mt-6 text-xs text-white/50">{item.quote.author}</figcaption>}
                     </figure>
                 )}
             </div>
 
             {next && (
-                <section className="bg-white px-[104px] py-[72px] text-black">
-                    <Link href={`/works/${next.slug}`} className="group flex items-center justify-between">
-                        <div>
+                <section className="bg-white px-5 py-10 md:px-[104px] md:py-[72px] text-black">
+                    <Link href={`/works/${next.slug}`} className="group gap-4 flex items-center justify-between">
+                        <div className="min-w-0 wrap-break-word">
                             <p className="font-mono text-xs opacity-50">следующий кейс</p>
-                            <p className="mt-3 text-display group-hover:underline">{next.title}</p>
+                            <p className="mt-3 text-4xl md:text-display group-hover:underline">{next.title}</p>
                         </div>
-                        <svg className="size-14 transition-transform group-hover:translate-x-2" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <svg className="size-9 shrink-0 md:size-14 transition-transform group-hover:translate-x-2" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path d="M11.6665 28H44.3332M30.3332 42L44.3332 28L30.3332 14" stroke="currentColor" strokeWidth="2.8" />
                         </svg>
                     </Link>
@@ -155,7 +155,7 @@ export default function CasePage({ params }: { params: Params }) {
         <>
             <Header />
             <main>
-                <Suspense fallback={<p className="px-[104px] pt-12 text-h3 text-white/50">Загружаем…</p>}>
+                <Suspense fallback={<p className="px-5 md:px-[104px] pt-12 text-h3 text-white/50">Загружаем…</p>}>
                     <CaseContent params={params} />
                 </Suspense>
             </main>
