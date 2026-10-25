@@ -4,6 +4,7 @@ import "./globals.css";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import { CartProvider } from "@/lib/cart";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <CartDrawer />
         </CartProvider>
       </body>
+        {process.env.NODE_ENV === "production" && <GoogleAnalytics gaId="G-WSK55KLZLX" />}
     </html>
   );
 }
