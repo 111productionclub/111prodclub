@@ -42,13 +42,19 @@ class CaseDetailSerializer(CaseListSerializer):
     images = CaseImageSerializer(many=True, read_only=True)
     metrics = CaseMetricSerializer(many=True, read_only=True)
     quote = serializers.SerializerMethodField()
+    video = serializers.SerializerMethodField()
 
     class Meta(CaseListSerializer.Meta):
         fields = CaseListSerializer.Meta.fields + [
-            "client", "work", "duration", "url", "task", "solution", "images", "metrics", "quote",
+            "client", "work", "duration", "url", "task", "solution", "images", "metrics", "quote", "video",
         ]
 
     def get_quote(self, obj):
         if not obj.quote_text:
             return None
         return {"text": obj.quote_text, "author": obj.quote_author}
+    
+    def get_video(self, obj):
+        if not obj.video:
+            return None
+        return {obj.video.url}

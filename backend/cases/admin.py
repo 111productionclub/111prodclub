@@ -34,6 +34,6 @@ class CaseAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {"fields": ["title", "slug", "number", "kind", "category", "year", "order", "is_published"]}),
         ("Карточка на /works", {"fields": ["summary", "tags"]}),
-        ("Страница кейса", {"fields": ["client", "work", "duration", "url", "task", "solution"]}),
+        ("Страница кейса", {"fields": ["client", "work", "duration", "url", "video", "task", "solution"]}),
         ("Цитата", {"fields": ["quote_text", "quote_author"], "classes": ["collapse"]}),
     ]
