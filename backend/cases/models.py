@@ -1,14 +1,24 @@
+from os.path import splitext
+from uuid import uuid4
 from django.db import models
+from django.core.validators import FileExtensionValidator
 
 from .images import optimize, variant_name
 
+def case_video_path(instance, filename):
+    uid = uuid4().hex
+    suffix = splitext(filename)
+    suffix = suffix[-1].lower()
+    new_path = f"cases/video/{uid}{suffix}"
+    return new_path    
+
 
 class Case(models.Model):
+    
     class Category(models.TextChoices):
         SITES = "sites", "Сайты"
         BACKEND = "backend", "Бэкенд"
         MERCH = "merch", "Мерч"
-
     slug = models.SlugField(unique=True)
     number = models.CharField("номер", max_length=4, help_text="Как на сайте: 01, 02…")
     title = models.CharField("название", max_length=200)
@@ -21,6 +31,7 @@ class Case(models.Model):
     work = models.CharField("что делали", max_length=200, blank=True)
     duration = models.CharField("срок", max_length=100, blank=True)
     url = models.URLField("ссылка на проект", blank=True)
+    video = models.FileField("видео", blank=True, validators=[FileExtensionValidator(allowed_extensions=["mp4", "webm"])],upload_to=case_video_path)
     task = models.TextField("задача", blank=True)
     solution = models.TextField("решение", blank=True)
     quote_text = models.TextField("цитата клиента", blank=True, help_text="Только если клиент сам её дал")

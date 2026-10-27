@@ -31,12 +31,13 @@ export type CaseDetail = Case & {
     url: string
     task: string
     solution: string
+    video: string | null
     images: CaseImage[]
     metrics: { value: string; label: string }[]
     quote: { text: string; author: string } | null
 }
 
-const empty = { cover: null, client: "", work: "", duration: "", url: "", task: "", solution: "", images: [], metrics: [], quote: null };
+const empty = { cover: null, client: "", work: "", duration: "", url: "", task: "", solution: "", images: [], video: null, metrics: [], quote: null };
 
 // Запасной список, если бэкенд недоступен (сейчас на сервере он не развёрнут).
 // Кейсы и фото добавляются в админке Django, этот список их не заменяет.
@@ -132,6 +133,7 @@ export async function getCase(slug: string): Promise<CaseDetail | null> {
     return {
         ...data,
         cover: data.cover && withMedia(data.cover),
+        video: data.video && MEDIA_URL + data.video,
         images: data.images.map(withMedia),
     };
 }

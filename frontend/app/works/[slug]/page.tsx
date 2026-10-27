@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import SectionLabel from "@/components/SectionLabel";
 import CasePhoto from "@/components/CasePhoto";
 import Reveal from "@/components/Reveal";
+import CaseVideo from "@/components/CaseVideo";
 import { getCase, getCases } from "@/lib/cases";
 
 type Params = Promise<{ slug: string }>;
@@ -74,7 +75,13 @@ async function CaseContent({ params }: { params: Params }) {
 
                 <Reveal>
                     <div className="relative mt-8 md:mt-14 aspect-[3/2] md:aspect-[2/1] overflow-hidden rounded-lg bg-[#141414]">
-                        {hero ? (
+                        {item.video ? (
+                           <CaseVideo
+                            src={item.video}
+                            poster={hero?.src}
+                            className="absolute inset-0 h-full w-full"
+                            />
+                        ) : hero ? (
                             <CasePhoto
                                 image={hero}
                                 alt={hero.caption || item.title}
