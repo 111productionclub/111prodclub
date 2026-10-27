@@ -57,4 +57,4 @@ class CaseDetailSerializer(CaseListSerializer):
     def get_video(self, obj):
         if not obj.video:
             return None
-        return {obj.video.url}
+        return obj.video.url
